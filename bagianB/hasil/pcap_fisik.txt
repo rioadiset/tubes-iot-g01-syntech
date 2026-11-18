@@ -1,0 +1,11 @@
+Link type pcap: 1
+
+[HTTP] frame=675  byte_frame=143673  byte_IP=134223  payload_TCP=107207  header_IP+TCP=27016  SYN=1  ACK_kosong=238
+   rasio header IP+TCP / payload TCP = 0.25
+
+[MQTT] frame=2985  byte_frame=402520  byte_IP=360730  payload_TCP=241266  header_IP+TCP=119464  SYN=1  ACK_kosong=1319
+   rasio header IP+TCP / payload TCP = 0.50
+
+Paket MQTT per jenis: {'CONNECT': 1, 'SUBSCRIBE': 2, 'PUBLISH': 800, 'UNSUBSCRIBE': 1, 'PUBACK': 400, 'PINGREQ': 11, 'CONNACK': 1, 'SUBACK': 2, 'UNSUBACK': 1, 'PINGRESP': 11}
+
+Catatan: payload TCP HTTP sudah termasuk header HTTP; payload TCP MQTT termasuk header MQTT.

@@ -1,0 +1,6 @@
+label_id,kelas,mulai,selesai,keterangan,bukti_foto
+1,ac1_ubah,2026-11-12T00:00:00+07:00,2026-11-12T14:40:00+07:00,baseline lama sebelum AC1 dikunci 20C (~14:10) + 30 menit stabilisasi,-
+2,dual_ac,2026-11-13T09:46:00+07:00,2026-11-13T16:25:00+07:00,laporan WA 09.46 / 16.25,G01_log_ac2_wa.jpg
+3,dual_ac,2026-11-13T18:10:00+07:00,2026-11-13T19:01:00+07:00,laporan WA 18.12 / 19.01,G01_log_ac2_wa.jpg
+4,dual_ac,2026-11-16T12:10:00+07:00,2026-11-16T20:16:00+07:00,laporan WA 12.10 / 20.17,G01_log_ac2_wa.jpg
+5,dual_ac,2026-11-17T12:37:00+07:00,,laporan WA 12.37 nyala; jam mati menyusul,G01_log_ac2_wa.jpg

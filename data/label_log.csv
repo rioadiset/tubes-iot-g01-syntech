@@ -1,0 +1,6 @@
+event_id,kondisi,mulai_wib,selesai_wib,foto,pic,catatan
+1,ac1_ubah,2026-11-12 00:00:00,2026-11-12 14:40:00,,Rio,baseline lama sebelum AC1 dikunci 20C (~14:10) + 30 menit stabilisasi
+2,dual_ac,2026-11-13 09:46:00,2026-11-13 16:25:00,G01_log_ac2_wa.jpg,Rio,laporan WA 09.46 / 16.25
+3,dual_ac,2026-11-13 18:10:00,2026-11-13 19:01:00,G01_log_ac2_wa.jpg,Rio,laporan WA 18.12 / 19.01
+4,dual_ac,2026-11-16 12:10:00,2026-11-16 20:16:00,G01_log_ac2_wa.jpg,Rio,laporan WA 12.10 / 20.17
+5,dual_ac,2026-11-17 12:37:00,,G01_log_ac2_wa.jpg,Rio,laporan WA 12.37 nyala; jam mati menyusul

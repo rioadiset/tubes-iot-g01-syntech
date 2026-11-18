@@ -1,0 +1,8 @@
+Sumber: data/dataset_berlabel.csv
+Periode: 2026-11-12 00:00:15 s.d. 2026-11-17 14:03:57
+Total sampel: 16056
+  anomali   pakai_latih=0: 1757
+  dual_ac   pakai_latih=0: 80
+  dual_ac   pakai_latih=1: 1961
+  idle      pakai_latih=0: 80
+  idle      pakai_latih=1: 12178

@@ -1,0 +1,3 @@
+MQTT
+DHT sensor library
+Adafruit Unified Sensor

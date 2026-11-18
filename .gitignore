@@ -1,0 +1,17 @@
+# kredensial — JANGAN di-upload
+secrets.h
+**/secrets.h
+API
+*.key
+.env
+
+# hasil build / cache
+build/
+__pycache__/
+*.pyc
+label/.state/
+
+# file sementara
+*.swp
+.~lock*
+~$*

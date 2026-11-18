@@ -1,0 +1,35 @@
+Metadata eksperimen:
+  # ===== BAGIAN B G01 SYNTECH =====
+  # waktu=no-time wokwi=0
+  # mqtt_broker=192.168.200.66:1883 topic=g01syntech/rtt/9340c86c
+  # http_server=192.168.200.66:8080/status/200 keepalive=1
+  # n=100 gap_ms=2000 timeout_ms=5000 start_from=S1
+  # sensor=DHT11 pin=4
+  # S1 mulai no-time
+  # S1 selesai 2026-11-16 16:27:17
+  panjang topik MQTT = 23 B
+  bacaan sensor dalam payload: 600 sampel, suhu 24.5-24.8 C, RH 43.0-45.0 %
+
+Sk  Nama             kirim terima   PDR%     mean   median      sd      P95      max reconn  OH app   OH/P
+S1  HTTP 20 B          100    100  100.0    90.15     9.87  459.95    16.84  4165.88      1     255  12.75
+S2  HTTP 500 B         100    100  100.0    14.22    11.05   15.00    21.04   150.03      0     256   0.51
+S3  MQTT QoS0 20 B     100    100  100.0   104.60    51.37  240.08   304.35  1875.30      1      27   1.35
+S4  MQTT QoS0 500 B    100    100  100.0   267.67    56.63  608.40  1602.66  4346.92      0      28   0.06
+S5  MQTT QoS1 20 B     100    100  100.0    68.77    50.44  140.54    66.26  1446.26      0      33   1.65
+S6  MQTT QoS1 500 B    100    100  100.0    41.04    50.52   23.53    60.87   169.78      0      34   0.07
+
+RTT dalam ms. OH app = byte header lapisan aplikasi per pesan terkirim; OH/P = OH app ÷ payload.
+  S1: header request 144 B + response 111 B; + TCP/IP min 40 B × segmen data -> ±335 B
+  S2: header request 145 B + response 111 B; + TCP/IP min 40 B × segmen data -> ±336 B
+  S3: header PUBLISH 27 B; + TCP/IP min 40 B × segmen data -> ±67 B
+  S4: header PUBLISH 28 B; + TCP/IP min 40 B × segmen data -> ±68 B
+  S5: header PUBLISH 29 B + PUBACK 4 B; + TCP/IP min 40 B × segmen data -> ±113 B
+  S6: header PUBLISH 30 B + PUBACK 4 B; + TCP/IP min 40 B × segmen data -> ±114 B
+
+Cek silang SUM dari perangkat (n_kirim, n_ok, mean, median, sd, p95):
+  S1: ['100', '100', '90.15', '9.87', '459.95', '16.84']
+  S2: ['100', '100', '14.22', '11.05', '15.00', '21.04']
+  S3: ['100', '100', '104.60', '51.37', '240.08', '304.35']
+  S4: ['100', '100', '267.67', '56.64', '608.40', '1602.66']
+  S5: ['100', '100', '68.77', '50.44', '140.54', '66.26']
+  S6: ['100', '100', '41.04', '50.52', '23.53', '60.87']
