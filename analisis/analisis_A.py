@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 FMT = "%Y-%m-%d %H:%M:%S"
 INTERVAL = 30
 WARNA = {"dual_ac": "#3b82f6", "occupied": "#f59e0b", "campuran": "#a855f7", "anomali": "#9ca3af"}
-KELAS_LATIH = ["idle", "dual_ac", "occupied"]
+KELAS_LATIH = ["idle_siang", "idle_malam", "dual_ac", "occupied"]
 
 
 def f(x):
@@ -58,8 +58,8 @@ def ringkas(v):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data/dataset_berlabel.csv")
-    ap.add_argument("--start", default="2026-11-12 00:00:00")
-    ap.add_argument("--end", default="2026-11-19 00:00:00")
+    ap.add_argument("--start", default="2026-11-11 18:00:00")
+    ap.add_argument("--end", default="2026-11-18 18:00:00")
     ap.add_argument("--out", default="analisis/hasil")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)

@@ -19,7 +19,7 @@ import os
 from collections import Counter
 from datetime import datetime
 
-KELAS = {"idle", "dual_ac", "occupied"}
+KELAS = {"idle_siang", "idle_malam", "dual_ac", "occupied"}
 
 
 def main():

@@ -9,7 +9,8 @@
 | Asa Purwaningsih | 2311101012 | Analisis & laporan |
 
 - **Bagian A:** ESP32 + DHT11 di ruang server Lab Network Security → WiFi lab → HTTP GET ke ThingSpeak **channel 3569769** tiap 30 s.
-  Periode resmi: **12 Nov 2026 00:00 – 19 Nov 2026 00:00 WIB**. AC #1 dikunci 20 °C; AC #2 dinyalakan manual (dicatat dari laporan grup WA).
+  Periode resmi: **11 Nov 2026 18:00 – 18 Nov 2026 18:00 WIB** (7 × 24 jam). AC #1 dikunci 20 °C; AC #2 dinyalakan manual (dicatat dari laporan grup WA).
+  Kelas: `idle_siang`, `idle_malam` (hanya AC #1) dan `dual_ac` (AC #1 + AC #2).
 - **Bagian B:** ESP32 + DHT11 fisik, server HTTP lokal (keep-alive, port 8080) dan broker Mosquitto (port 1883) di laptop pada LAN yang sama; 6 skenario × 100 pesan; capture tshark.
 
 ## Struktur
@@ -62,8 +63,8 @@ arduino-cli upload  -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32 tubes_iot_bagianA
 ## Mencatat kejadian
 ```bash
 export PIC=Rio
-./label/label.sh start occupied "praktikum modul X, 20 orang"
-./label/label.sh stop  occupied G01_occupied_20261118_0800.jpg
+./label/label.sh start dual_ac "AC2 nyala"
+./label/label.sh stop  dual_ac G01_log_ac2_wa.jpg
 ```
 Kejadian `dual_ac` diambil dari laporan nyala/mati AC #2 di grup WA (lihat `PEDOMAN_LABEL.md` §3).
 

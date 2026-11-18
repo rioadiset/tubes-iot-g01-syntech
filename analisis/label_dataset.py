@@ -8,7 +8,7 @@ Aturan inti (lihat PEDOMAN_LABEL.md):
     TERPISAH dan boleh tumpang tindih.
   * Per sampel dibuat kolom biner 0/1 untuk tiap kondisi (multi-label).
   * label_utama (single-label) diturunkan secara deterministik:
-        0 kondisi aktif  -> idle
+        0 kondisi aktif  -> idle_siang (08.00-20.00) atau idle_malam (20.00-08.00)
         1 kondisi aktif  -> nama kondisi tersebut
         >=2 kondisi aktif -> campuran   (TIDAK dipaksa ke salah satu kelas)
         ac1_ubah / tidak_pasti aktif -> anomali (dikecualikan dari pelatihan)
@@ -85,9 +85,10 @@ def main():
     ap.add_argument("--feeds", required=True, help="CSV ekspor ThingSpeak")
     ap.add_argument("--log", required=True, help="label_log.csv")
     ap.add_argument("--out", required=True, help="CSV keluaran berlabel")
-    ap.add_argument("--start", default="2026-11-12 00:00:00", help="mulai periode resmi (WIB)")
-    ap.add_argument("--end", default="2026-11-19 00:00:00", help="akhir periode resmi (WIB)")
+    ap.add_argument("--start", default="2026-11-11 18:00:00", help="mulai periode resmi (WIB)")
+    ap.add_argument("--end", default="2026-11-18 18:00:00", help="akhir periode resmi (WIB)")
     ap.add_argument("--transisi", type=int, default=10, help="menit masa transisi setelah mulai/selesai")
+    ap.add_argument("--siang", default="08:00-20:00", help="rentang jam kelas idle_siang (sisanya idle_malam)")
     a = ap.parse_args()
 
     t0, t1 = parse_wib(a.start), parse_wib(a.end)
@@ -100,6 +101,14 @@ def main():
         sys.exit("Perbaiki label_log.csv dulu.")
 
     batas = [(e["a"], e["b"]) for e in events]
+    sa, sb = [tuple(map(int, x.split(":"))) for x in a.siang.split("-")]
+    d = t0.date()
+    while d <= t1.date():   # pergantian idle_siang <-> idle_malam juga diberi masa transisi
+        for hh, mm in (sa, sb):
+            x = datetime(d.year, d.month, d.day, hh, mm)
+            batas.append((x, x))
+        d += timedelta(days=1)
+    siang = lambda t: sa <= (t.hour, t.minute) < sb
     dt_trans = timedelta(minutes=a.transisi)
 
     rows_out, n_label, n_trans = [], Counter(), 0
@@ -116,7 +125,8 @@ def main():
                     ids.append(e["id"])
             n = sum(aktif.values())
             on = [k for k in KONDISI if aktif[k]]
-            utama = ("anomali" if any(aktif[k] for k in ANOMALI) else "idle" if n == 0
+            utama = ("anomali" if any(aktif[k] for k in ANOMALI)
+                     else ("idle_siang" if siang(t) else "idle_malam") if n == 0
                      else on[0] if n == 1 else "campuran")
             trans = int(any(0 <= (t - x).total_seconds() < dt_trans.total_seconds()
                             for ab in batas for x in ab))
@@ -126,7 +136,7 @@ def main():
                 "suhu_c": suhu, "suhu_bulat_c": math.floor(float(suhu)) if suhu else "",
                 "kelembapan_rh": r["field2"], "rssi_dbm": r["field3"], "uptime_s": r["field5"],
                 "err_count": r["field6"], "status_sensor": r["field7"],
-                **aktif, "n_kondisi": n, "label_kombinasi": "+".join(on) or "idle",
+                **aktif, "n_kondisi": n, "label_kombinasi": "+".join(on) or utama,
                 "label_utama": utama, "transisi": trans, "event_ids": ";".join(ids),
             })
             n_label[utama] += 1

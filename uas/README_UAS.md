@@ -22,13 +22,13 @@ Sumber asli (jangan diubah, semua di `data/`):
 | `kelembapan_rh` | Kelembapan (%RH, bilangan bulat) |
 | `rssi_dbm` | Kekuatan sinyal WiFi |
 | `dual_ac`, `occupied` | Label multi-kondisi (0/1) |
-| `label_kombinasi`, `label_utama` | Label gabungan / tunggal (idle, dual_ac, occupied, campuran, anomali) |
+| `label_kombinasi`, `label_utama` | Label gabungan / tunggal (idle_siang, idle_malam, dual_ac, campuran, anomali) |
 | `transisi` | 1 = 10 menit setelah kondisi berubah (suhu belum stabil) |
 | `pakai_latih` | 1 = kelas valid dan bukan transisi |
 
 ## Catatan untuk pemodelan
 - Pakai **pembagian berbasis waktu** (mis. per hari), bukan acak per sampel: sampel 30 s yang berdekatan hampir identik sehingga split acak membuat akurasi terlihat terlalu tinggi.
-- Hati-hati dengan fitur `jam`: AC #2 lebih sering menyala siang hari, sehingga model bisa "menebak dari jam". Bandingkan model dengan dan tanpa fitur waktu.
+- **Jangan pakai fitur `jam`/`menit_hari` untuk memisahkan idle_siang vs idle_malam**: kelas itu didefinisikan dari jam, sehingga akurasinya menjadi semu. Latih model hanya dengan fitur sensor (suhu, RH, laju perubahan), atau gabungkan kedua kelas idle bila tujuan model adalah mendeteksi AC #2.
 - Fitur turunan yang wajar: selisih suhu 10/30 menit (laju perubahan), rerata bergulir.
 - Kelas tidak seimbang (idle jauh lebih banyak) → laporkan F1/recall per kelas, bukan hanya akurasi.
 

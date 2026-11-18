@@ -2,21 +2,24 @@
 
 Sistem: ESP32 + DHT11 → ThingSpeak (channel 3569769), interval 30 detik.
 Lokasi: ruang server Lab Network Security, Telkom University Purwokerto (dua unit AC; AC #1 menyala 24 jam).
-Periode rekaman resmi: **Kamis, 12 Nov 2026 00:00 WIB s.d. Kamis, 19 Nov 2026 00:00 WIB** (7 × 24 jam, 20.160 sampel).
+Periode rekaman resmi (revisi 18 Nov 2026): **Rabu, 11 Nov 2026 18:00 WIB s.d. Rabu, 18 Nov 2026 18:00 WIB** (7 × 24 jam, 20.160 sampel). Perangkat merekam sejak 7 Nov 2026 16:32 WIB.
 
 ## 1. Kondisi baseline
 
-Pada Kamis, 12 Nov 2026 (±14.10 WIB), AC #1 dikunci pada setpoint **20 °C** dan tidak diubah hingga akhir periode. Penetapan ini menghilangkan variasi setpoint AC #1 (sebelumnya berkisar 16–25 °C sesuai keinginan pengguna) sebagai variabel pengganggu. Sampel pada 12 Nov 00:00 hingga penguncian, ditambah 30 menit stabilisasi, tetap dihitung dalam kelengkapan perekaman, tetapi diberi penanda `ac1_ubah` sehingga dikecualikan dari data latih. Data sebelum 12 Nov tidak digabungkan dengan dataset utama.
+Pada Kamis, 12 Nov 2026 (±14.10 WIB), AC #1 dikunci pada setpoint **20 °C** dan tidak diubah hingga akhir periode. Penetapan ini menghilangkan variasi setpoint AC #1 (sebelumnya berkisar 16–25 °C sesuai keinginan pengguna) sebagai variabel pengganggu. Sampel pada 11 Nov 18:00 hingga penguncian, ditambah 30 menit stabilisasi, tetap dihitung dalam kelengkapan perekaman, tetapi diberi penanda `ac1_ubah` sehingga dikecualikan dari data latih. Data sebelum 11 Nov 18:00 tidak digabungkan dengan dataset utama.
 
 ## 2. Kelas dan kondisi yang dicatat
 
 | Kode | Definisi operasional | Sumber label |
 |---|---|---|
-| `idle` | AC #1 pada 20 °C, AC #2 mati, dan kurang dari 3 orang di lab | Turunan (tidak ada kondisi lain aktif) |
+| `idle_siang` | AC #1 pada 20 °C, AC #2 mati, pukul 08.00–20.00 WIB | Log AC #2 + jam |
+| `idle_malam` | AC #1 pada 20 °C, AC #2 mati, pukul 20.00–08.00 WIB | Log AC #2 + jam |
 | `dual_ac` | AC #2 menyala bersama AC #1 | Laporan nyala/mati AC #2 di grup WA (bertimestamp) |
-| `occupied` | Terdapat ≥ 3 orang di dalam lab (praktikum, rapat, kerja kelompok) | Jadwal praktikum resmi + laporan grup |
+| `occupied` | **Tidak dipakai (revisi 18 Nov).** Rencana: ≥ 3 orang di lab | Tidak ada kejadian tercatat selama periode |
 | `ac1_ubah` | **Bukan kelas.** Setpoint AC #1 menyimpang dari 20 °C | Laporan / pemeriksaan harian |
 | `tidak_pasti` | **Bukan kelas.** Perubahan bacaan yang tidak dapat dijelaskan oleh catatan mana pun | Pemeriksaan data (Bagian 5) |
+
+**Revisi 18 Nov 2026:** kelas `occupied` tidak memiliki kejadian tercatat, sehingga kelas `idle` dibagi menurut jam menjadi `idle_siang` dan `idle_malam`. Profil harian sampel idle menunjukkan suhu mulai naik ±08.00 (beban panas gedung dan matahari) dan turun setelah ±20.00; batas jam tidak bergantung pada bacaan sensor. 10 menit setelah 08.00 dan 20.00 ditandai transisi. `dual_ac` didahulukan atas pembagian jam.
 
 Kondisi pintu dibuka tidak digunakan sebagai kelas. Kebijakan lab membatasi pintu terbuka maksimal sekitar 1 menit, setara dua sampel, sehingga efeknya tidak terukur dan kelasnya tidak dapat dibedakan dari `idle`.
 
@@ -30,9 +33,10 @@ Rencana awal memakai timer AC #2 07.30–20.00 pada hari kerja. Dalam pelaksanaa
 | Jum, 13 Nov | 18.10 | 19.01 | Pesan WA 18.12 dan 19.01 |
 | Sab–Min, 14–15 Nov | — | — | AC #2 mati sepanjang hari |
 | Sen, 16 Nov | 12.10 | 20.16 | Pesan WA 12.10 dan 20.17 |
-| Sel, 17 Nov | 12.37 | (isi saat dimatikan) | Pesan WA 12.37 |
+| Sel, 17 Nov | 12.37 | 21.16 | Pesan WA 12.37 dan 21.17 |
+| Rab, 18 Nov | 14.40 | 17.31 | Pesan WA 14.39 dan 17.31 |
 
-Di luar interval tersebut AC #2 mati (`idle`). Bukti: tangkapan layar percakapan grup (`bukti/G01_log_ac2_wa.jpg`) ditambah foto panel/remote AC #2 bila tersedia. Konsistensi label diperiksa terhadap data: setiap kali AC #2 dinyalakan, suhu rata-rata 30–60 menit sesudahnya turun 1,0–2,4 °C dibanding 30 menit sebelumnya, dan naik kembali setelah AC #2 dimatikan. `label/isi_jadwal.py` tidak dipakai lagi.
+Di luar interval tersebut AC #2 mati (`idle_siang`/`idle_malam`). Bukti: tangkapan layar percakapan grup (`bukti/G01_log_ac2_wa.jpg`) ditambah foto panel/remote AC #2 bila tersedia. Konsistensi label diperiksa terhadap data: setiap kali AC #2 dinyalakan, suhu rata-rata 30–60 menit sesudahnya turun 1,0–2,4 °C dibanding 30 menit sebelumnya, dan naik kembali setelah AC #2 dimatikan. `label/isi_jadwal.py` tidak dipakai lagi.
 
 ## 4. Penanganan kejadian yang berlangsung bersamaan
 

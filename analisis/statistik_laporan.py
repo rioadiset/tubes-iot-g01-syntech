@@ -43,8 +43,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data/dataset_berlabel.csv")
     ap.add_argument("--log", default="data/label_log.csv")
-    ap.add_argument("--start", default="2026-11-12 00:00:00")
-    ap.add_argument("--end", default="2026-11-19 00:00:00")
+    ap.add_argument("--start", default="2026-11-11 18:00:00")
+    ap.add_argument("--end", default="2026-11-18 18:00:00")
     ap.add_argument("--out", default="analisis/hasil")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
@@ -89,20 +89,17 @@ def main():
     # label & kelas
     N["label_utama"] = dict(Counter(r["label_utama"] for r in R))
     N["transisi"] = sum(int(r["transisi"]) for r in R)
-    latih = [i for i, r in enumerate(R) if r["label_utama"] in ("idle", "dual_ac", "occupied") and r["transisi"] == "0"]
+    KLS = ("idle_siang", "idle_malam", "dual_ac", "occupied")
+    latih = [i for i, r in enumerate(R) if r["label_utama"] in KLS and r["transisi"] == "0"]
     kelas = defaultdict(list)
     for i in latih:
         kelas[R[i]["label_utama"]].append(i)
     N["kelas"] = {k: {"suhu": desc([T[i] for i in v]), "rh": desc([H[i] for i in v])} for k, v in kelas.items()}
-    # idle dipecah siang (07.30-20.00) / malam
-    siang = lambda x: (x.hour, x.minute) >= (7, 30) and x.hour < 20
-    for nm, f in (("idle_siang", siang), ("idle_malam", lambda x: not siang(x))):
-        v = [i for i in kelas["idle"] if f(t[i])]
-        N["kelas"][nm] = {"suhu": desc([T[i] for i in v]), "rh": desc([H[i] for i in v])}
     # hour-matched: selisih dual_ac - idle pada jam yang sama, berbobot jumlah sampel dual_ac
     by = defaultdict(lambda: defaultdict(list))
     for i in latih:
-        by[R[i]["label_utama"]][t[i].hour].append(T[i])
+        k = "idle" if R[i]["label_utama"].startswith("idle") else R[i]["label_utama"]
+        by[k][t[i].hour].append(T[i])
     num = den = 0
     perjam = {}
     for h, v in by["dual_ac"].items():
@@ -114,7 +111,7 @@ def main():
     N["hour_matched"] = {"selisih": num / den if den else None, "per_jam": perjam}
     for nm, (h0, h1) in (("tengah_hari", (11, 15)),):
         g = lambda k: [T[i] for i in kelas[k] if h0 <= t[i].hour < h1]
-        N[nm] = {"dual_ac": desc(g("dual_ac")), "idle": desc(g("idle"))}
+        N[nm] = {"dual_ac": desc(g("dual_ac")), "idle": desc(g("idle_siang"))}
 
     # kejadian & respons AC2
     log = list(csv.DictReader(open(a.log)))
@@ -139,19 +136,21 @@ def main():
             resp.append({"id": e["id"], "aksi": aksi, "waktu": w.strftime("%Y-%m-%d %H:%M"), "sebelum": sb, "sesudah": ss, "delta": ss - sb})
     N["respons_ac2"] = resp
 
-    # segmen idle (interval AC#2 mati, tanpa kondisi lain) >= 60 menit
-    seg, cur = [], None
-    for i, r in enumerate(R):
-        if r["label_utama"] == "idle":
-            cur = cur or [t[i], t[i]]
-            cur[1] = t[i]
-        elif cur:
-            seg.append(cur)
+    # kejadian per kelas = segmen kontinu label_utama >= 60 menit
+    seg = defaultdict(list)
+    cur = None
+    for i, r in enumerate(R + [{"label_utama": None}]):
+        lab = r["label_utama"]
+        if cur and lab != cur[0]:
+            if (cur[2] - cur[1]) >= timedelta(minutes=60):
+                seg[cur[0]].append((cur[1].strftime("%Y-%m-%d %H:%M"), cur[2].strftime("%Y-%m-%d %H:%M")))
             cur = None
-    if cur:
-        seg.append(cur)
-    seg = [(x.strftime("%Y-%m-%d %H:%M"), y.strftime("%Y-%m-%d %H:%M")) for x, y in seg if (y - x) >= timedelta(minutes=60)]
-    N["segmen_idle"] = seg
+        if lab is None:
+            break
+        if cur is None:
+            cur = [lab, t[i], t[i]]
+        cur[2] = t[i]
+    N["segmen"] = {k: seg.get(k, []) for k in KLS}
 
     # uji silang dua DHT11 (Bagian B, 16 Nov 16.24-16.44)
     a0, a1 = p("2026-11-16 16:24:00"), p("2026-11-16 16:45:00")
@@ -175,7 +174,8 @@ def main():
     L.append(f"Tengah hari 11-15: {N['tengah_hari']}")
     for r in resp:
         L.append(f"  AC2 {r['aksi']:5s} {r['waktu']}: {r['sebelum']:.2f} -> {r['sesudah']:.2f} ({r['delta']:+.2f})")
-    L.append(f"Segmen idle >=60 menit: {len(seg)} {seg}")
+    for k, v in N["segmen"].items():
+        L.append(f"Kejadian {k} (segmen >=60 menit): {len(v)}")
     L.append(f"Uji silang: {N.get('uji_silang_A')}")
     txt = "\n".join(L)
     print(txt)

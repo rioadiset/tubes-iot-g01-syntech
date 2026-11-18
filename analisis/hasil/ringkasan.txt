@@ -1,20 +1,22 @@
-Periode       : 2026-11-12 00:00:00 s.d. 2026-11-17 14:04:00 WIB
-Kelengkapan   : 16056 / 16088 = 99.80 %
+Periode       : 2026-11-11 18:00:00 s.d. 2026-11-18 18:00:00 WIB
+Kelengkapan   : 20119 / 20160 = 99.80 %
 Celah > 65 s  : 0 kali, total 0.0 menit
 Reboot        : 0 kali []
 Sensor gagal  : 0 sampel
 Gagal kirim   : 0 (selisih err_count)
-RSSI (dBm)    : n=16056  mean=-29.68  sd= 2.44  min=-61.0  max=-23.0
+RSSI (dBm)    : n=20119  mean=-29.88  sd= 2.34  min=-61.0  max=-23.0
 
-Sampel per label_utama : {'anomali': 1757, 'idle': 12258, 'dual_ac': 2041}
-Data latih (tanpa campuran/anomali/transisi): 14139 sampel, dikecualikan 1917
+Sampel per label_utama : {'anomali': 2476, 'idle_siang': 5961, 'idle_malam': 8438, 'dual_ac': 3244}
+Data latih (tanpa campuran/anomali/transisi): 17185 sampel, dikecualikan 2934
 
 Statistik per kelas (data latih):
-  idle      suhu_bulat : n=12178  mean= 25.40  sd= 1.23  min= 23.0  max= 28.0
-            kelembapan : n=12178  mean= 46.10  sd= 2.09  min= 43.0  max= 55.0
-  dual_ac   suhu_bulat : n= 1961  mean= 25.11  sd= 1.22  min= 22.0  max= 28.0
-            kelembapan : n= 1961  mean= 45.38  sd= 1.61  min= 42.0  max= 51.0
+  idle_siang suhu_bulat : n= 5761  mean= 26.59  sd= 1.10  min= 24.0  max= 29.0
+            kelembapan : n= 5761  mean= 47.48  sd= 2.55  min= 44.0  max= 56.0
+  idle_malam suhu_bulat : n= 8319  mean= 24.47  sd= 0.72  min= 23.0  max= 26.0
+            kelembapan : n= 8319  mean= 45.26  sd= 1.49  min= 43.0  max= 51.0
+  dual_ac   suhu_bulat : n= 3105  mean= 24.69  sd= 1.30  min= 22.0  max= 28.0
+            kelembapan : n= 3105  mean= 45.05  sd= 1.51  min= 42.0  max= 51.0
   occupied  suhu_bulat : n=0
             kelembapan : n=0
 
-Jumlah event dengan sampel di periode: 5
+Jumlah event dengan sampel di periode: 6
