@@ -13,17 +13,24 @@
   Kelas: `idle_siang`, `idle_malam` (hanya AC #1) dan `dual_ac` (AC #1 + AC #2).
 - **Bagian B:** ESP32 + DHT11 fisik, server HTTP lokal (keep-alive, port 8080) dan broker Mosquitto (port 1883) di laptop pada LAN yang sama; 6 skenario × 100 pesan; capture tshark.
 
+## Tautan
+- GitHub: https://github.com/rioadiset/tubes-iot-g01-syntech
+- ThingSpeak channel 3569769: https://thingspeak.mathworks.com/channels/3569769
+
+## Pengolahan data
+Data mentah (`data/feeds_*.csv`, `bagianB/data/serial_fisik.txt`, `bagianB/data/fisik.pcap`) tidak pernah diubah. Semua pengolahan dilakukan oleh skrip di bawah dan menulis berkas keluaran baru. Perubahan label tercatat di `PEDOMAN_LABEL.md` (bagian revisi) dan `data/label_log.csv`.
+
 ## Struktur
 ```
 tubes_iot_bagianA/        firmware Bagian A (salin secrets.example.h -> secrets.h lalu isi)
 bagianB/
   fisik/                  firmware Bagian B (versi final), server_lokal.py, mosquitto_g01.conf, README_FISIK.md
   wokwi/                  versi Wokwi (dipakai di run awal; gateway publik Wokwi gagal)
-  analisis/               analisis_B.py (RTT, PDR, overhead, grafik), pcap_overhead.py (verifikasi pcap)
+  analisis/               buat_exp_csv.py (serial -> exp_S1..S6), analisis_B.py (RTT, PDR, overhead, grafik), pcap_overhead.py (verifikasi pcap)
   data/                   serial_fisik.txt, fisik.pcap, exp/exp_S1..S6.csv, serial_run1.txt, wokwi_run1.pcap
   hasil/                  ringkasan_B.txt, tabel_B.md, B1_boxplot.png, B2_cdf.png, pcap_fisik.txt
 data/                     feeds_*.csv (ekspor mentah ThingSpeak), label_log.csv, label_log_lampiran.csv, dataset_berlabel.csv
-analisis/                 label_dataset.py, statistik_laporan.py, analisis_A.py, buat_dataset_uas.py, hasil/
+analisis/                 label_dataset.py, statistik_laporan.py, analisis_A.py, grafik_laporan.py, buat_dataset_uas.py, kalibrasi.py, hasil/
 label/label.sh            pencatat kejadian (start/stop) ke data/label_log.csv
 uas/                      dataset siap pakai untuk UAS (lihat uas/README_UAS.md)
 bukti/                    foto instalasi, screenshot channel, bukti kejadian
@@ -45,10 +52,13 @@ python3 analisis/label_dataset.py --feeds data/feeds_<tanggal>.csv --log data/la
 python3 analisis/statistik_laporan.py          # angka laporan -> analisis/hasil/statistik_laporan.txt/.json
 python3 analisis/analisis_A.py --data data/dataset_berlabel.csv   # 4 grafik + ringkasan
 python3 analisis/buat_dataset_uas.py           # uas/dataset_uas.csv
+python3 analisis/grafik_laporan.py             # laporan/A_timeseries.png (Gambar C.2)
+python3 analisis/kalibrasi.py --feeds data/feeds_<tanggal>.csv   # opsional, butuh data/kalibrasi_manual.csv
 ```
 
 ## Reproduksi Bagian B
 ```bash
+python3 bagianB/analisis/buat_exp_csv.py --log bagianB/data/serial_fisik.txt   # exp_S1..S6.csv (format soal)
 python3 bagianB/analisis/analisis_B.py --log bagianB/data/serial_fisik.txt
 python3 bagianB/analisis/pcap_overhead.py bagianB/data/fisik.pcap "2026-11-16 16:23:50"
 ```
